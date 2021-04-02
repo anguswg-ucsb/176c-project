@@ -1,6 +1,10 @@
 # Decision trees example
 
 library(tidymodels)
+library(baguette)
+library(rules)
+library(workflowsets)
+
 data(concrete, package = "modeldata")
 glimpse(concrete)
 
@@ -30,8 +34,8 @@ poly_recipe <- normalized_rec %>%
   step_poly(all_predictors()) %>%
   step_interact(~all_predictors():all_predictors())
 
-library(rules)
-library(baguette)
+
+
 
 # models
 linear_reg_spec <-
@@ -83,15 +87,13 @@ xgb_spec <-
   set_engine("xgboost") %>%
   set_mode("regression")
 
-
-library(baguette)
-
 # linear models workflowset, requiring preprocessing step
 normalized <-
   workflow_set(
     preproc = list(normalized = normalized_rec),
-    models = list(SVM_radial = svm_r_spec, SVM_poly = svm_p_spec,
-                  KNN = knn_spec, neural_network = nnet_spec)
+    models = list(SVM_radial = svm_r_spec)
+    # models = list(SVM_radial = svm_r_spec, SVM_poly = svm_p_spec,
+    #               KNN = knn_spec, neural_network = nnet_spec)
   )
 
 # Non linear models workflowset
@@ -102,14 +104,15 @@ model_vars <-
 no_pre_proc <-
   workflow_set(
     preproc = list(simple = model_vars),
-    models = list(MARS = mars_spec, CART = cart_spec, CART_bagged = bag_cart_spec,
-                  RF = rf_spec, boosting = xgb_spec)
+    models = list(MARS = mars_spec)
+    # models = list(MARS = mars_spec, CART = cart_spec, CART_bagged = bag_cart_spec,
+    #               RF = rf_spec, boosting = xgb_spec)
   )
 
 with_features <-
   workflow_set(
     preproc = list(full_quad = poly_recipe),
-    models = list(linear_reg = linear_reg_spec, KNN = knn_spec)
+    models = list(linear_reg = linear_reg_spec)
   )
 
 all_workflows <-
@@ -117,13 +120,21 @@ all_workflows <-
   # Make the workflow ID's a little more simple:
   mutate(wflow_id = gsub("(simple_)|(normalized_)", "", wflow_id))
 
+# Grid & Tuning Grid
+grid_ctrl <-
+  control_grid(
+    save_pred = TRUE,
+    parallel_over = "everything",
+    save_workflow = TRUE
+  )
 
-
-
-
-
-
-
+grid_results <- all_workflows %>%
+  workflow_map(
+    seed = 1503,
+    resamples = concrete_folds,
+    grid = 25,
+    control = grid_ctrl
+  )
 
 
 
