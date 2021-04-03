@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="" xml:lang="">
+  <head>
+    <title>Geography 176C</title>
+    <meta charset="utf-8" />
+    <meta name="author" content="Angus Watters" />
+    <script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
+    <script src="libs/jquery-1.12.4/jquery.min.js"></script>
+    <link href="libs/leaflet-1.3.1/leaflet.css" rel="stylesheet" />
+    <script src="libs/leaflet-1.3.1/leaflet.js"></script>
+    <link href="libs/leafletfix-1.0.0/leafletfix.css" rel="stylesheet" />
+    <script src="libs/Proj4Leaflet-1.0.1/proj4-compressed.js"></script>
+    <script src="libs/Proj4Leaflet-1.0.1/proj4leaflet.js"></script>
+    <link href="libs/rstudio_leaflet-1.3.1/rstudio_leaflet.css" rel="stylesheet" />
+    <script src="libs/leaflet-binding-2.0.3/leaflet.js"></script>
+    <script src="libs/leaflet-providers-1.9.0/leaflet-providers_1.9.0.js"></script>
+    <script src="libs/leaflet-providers-plugin-2.0.3/leaflet-providers-plugin.js"></script>
+    <script src="libs/clipboard-0.0.1/setClipboardText.js"></script>
+    <link href="libs/dygraphs-1.1.1/dygraph.css" rel="stylesheet" />
+    <script src="libs/dygraphs-1.1.1/dygraph-combined.js"></script>
+    <script src="libs/dygraphs-1.1.1/shapes.js"></script>
+    <script src="libs/moment-2.8.4/moment.js"></script>
+    <script src="libs/moment-timezone-0.2.5/moment-timezone-with-data.js"></script>
+    <script src="libs/moment-fquarter-1.0.0/moment-fquarter.min.js"></script>
+    <script src="libs/dygraphs-binding-1.1.1.6/dygraphs.js"></script>
+    <link rel="stylesheet" href="ucsb.css" type="text/css" />
+  </head>
+  <body>
+    <textarea id="source">
+class: center, middle, inverse, title-slide
+
+# Geography 176C
+## NWM catchments and flow data
+### Angus Watters
+
+---
+
+
+&lt;style type="text/css"&gt;
+.remark-code{line-height: 2; font-size: 60%}
+&lt;/style&gt;
+
+
+# *Lightning talk!*
+
+---
+
+# **The National Water Model (NWM)**
+
+- The National Water Model (NWM) is a hydrologic modelling framework that simulates observed and forecast streamflow over the entire continental United States (CONUS). 
+
+- The NWM simulates the water cycle with mathematical representations of the different processes and how they fit together.
+
+--
+
+# **Motivation**
+
+- The NWM obtains data from over 8000 USGS stream gauges in the Nation and uses this data to expand forecasts to over 2.7 million stream locations nationwide.
+
+- This also means that there is a huge amount of historical streamflow data avalialbe at all these locations.
+
+---
+
+# **Problem**
+There is **NOT** an easy way to view catchments and simulataneously view historical stream flow data for the catchment.
+  - The data is all there but currently there isn't a quick and easy way to view both the catchment geometry and timeseries data on demand.  
+
+--
+
+# **Solution**
+- Create a ***R Shiny dashboard*** that allows the user to explore all watershed catchments in the US and get on demand streamflow data
+
+--
+
+- This project will be created in R using these **R packages**:
+  - `tidyr`
+  - `dplyer`
+  - `sf`
+  - `leaflet`
+  - `dataRetrieval`
+  - `nhdplusTools`
+  - `nwmTools`
+  - `shiny`
+  
+---
+
+# **Research questions**
+
+--
+
+**1. What is the relative impact of certain geographic factors on stream flows?**
+
+--
+  - Proximity to a dam, population density, land cover
+
+--
+
+
+**2. Forecast stream flow rates using precipitation and water withdrawals in a multilayer perceptron Machine learning algorithm**
+
+
+---
+count: false
+ 
+# Find Common ID from a lat/lng point
+.panel1-nldi-auto[
+
+```r
+*library(dataRetrieval)
+```
+]
+ 
+.panel2-nldi-auto[
+
+]
+
+---
+count: false
+ 
+# Find Common ID from a lat/lng point
+.panel1-nldi-auto[
+
+```r
+library(dataRetrieval)
+
+*nldi &lt;- findNLDI(location = c(-94.64, 31.09))
+```
+]
+ 
+.panel2-nldi-auto[
+
+]
+
+---
+count: false
+ 
+# Find Common ID from a lat/lng point
+.panel1-nldi-auto[
+
+```r
+library(dataRetrieval)
+
+nldi &lt;- findNLDI(location = c(-94.64, 31.09))
+*nldi
+```
+]
+ 
+.panel2-nldi-auto[
+
+```
+Simple feature collection with 1 feature and 3 fields
+geometry type:  LINESTRING
+dimension:      XY
+bbox:           xmin: -94.64845 ymin: 31.0838 xmax: -94.62997 ymax: 31.09915
+geographic CRS: WGS 84
+# A tibble: 1 x 4
+  sourceName   identifier comid                                         geometry
+  &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;                                 &lt;LINESTRING [°]&gt;
+1 NHDPlus com~ 101        101   (-94.64845 31.09915, -94.64803 31.09871, -94.64~
+```
+]
+
+---
+count: false
+ 
+# Find Common ID from a lat/lng point
+.panel1-nldi-auto[
+
+```r
+library(dataRetrieval)
+
+nldi &lt;- findNLDI(location = c(-94.64, 31.09))
+nldi
+```
+]
+ 
+.panel2-nldi-auto[
+
+```
+Simple feature collection with 1 feature and 3 fields
+geometry type:  LINESTRING
+dimension:      XY
+bbox:           xmin: -94.64845 ymin: 31.0838 xmax: -94.62997 ymax: 31.09915
+geographic CRS: WGS 84
+# A tibble: 1 x 4
+  sourceName   identifier comid                                         geometry
+  &lt;chr&gt;        &lt;chr&gt;      &lt;chr&gt;                                 &lt;LINESTRING [°]&gt;
+1 NHDPlus com~ 101        101   (-94.64845 31.09915, -94.64803 31.09871, -94.64~
+```
+]
+
+&lt;style&gt;
+.panel1-nldi-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-nldi-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-nldi-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+---
+
+count: false
+ 
+# Find catchment polygons using NHD Common ID
+.panel1-nhd-auto[
+
+```r
+*library(nhdplusTools)
+```
+]
+ 
+.panel2-nhd-auto[
+
+]
+
+---
+count: false
+ 
+# Find catchment polygons using NHD Common ID
+.panel1-nhd-auto[
+
+```r
+library(nhdplusTools)
+
+*nhd &lt;- get_nhdplus(comid = nldi$comid,
+*                  realization = "catchment")
+```
+]
+ 
+.panel2-nhd-auto[
+
+]
+
+---
+count: false
+ 
+# Find catchment polygons using NHD Common ID
+.panel1-nhd-auto[
+
+```r
+library(nhdplusTools)
+
+nhd &lt;- get_nhdplus(comid = nldi$comid,
+                   realization = "catchment")
+*nhd
+```
+]
+ 
+.panel2-nhd-auto[
+
+```
+Simple feature collection with 1 feature and 7 fields
+geometry type:  POLYGON
+dimension:      XY
+bbox:           xmin: -94.6561 ymin: 31.0837 xmax: -94.6285 ymax: 31.108
+geographic CRS: WGS 84
+# A tibble: 1 x 8
+  id              gridcode featureid sourcefc   areasqkm shape_length shape_area
+* &lt;chr&gt;              &lt;int&gt;     &lt;int&gt; &lt;chr&gt;         &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;
+1 catchmentsp.18~  1605970       101 NHDFlowli~     4.57        0.100   0.000432
+# ... with 1 more variable: geometry &lt;POLYGON [°]&gt;
+```
+]
+
+---
+count: false
+ 
+# Find catchment polygons using NHD Common ID
+.panel1-nhd-auto[
+
+```r
+library(nhdplusTools)
+
+nhd &lt;- get_nhdplus(comid = nldi$comid,
+                   realization = "catchment")
+nhd
+```
+]
+ 
+.panel2-nhd-auto[
+
+```
+Simple feature collection with 1 feature and 7 fields
+geometry type:  POLYGON
+dimension:      XY
+bbox:           xmin: -94.6561 ymin: 31.0837 xmax: -94.6285 ymax: 31.108
+geographic CRS: WGS 84
+# A tibble: 1 x 8
+  id              gridcode featureid sourcefc   areasqkm shape_length shape_area
+* &lt;chr&gt;              &lt;int&gt;     &lt;int&gt; &lt;chr&gt;         &lt;dbl&gt;        &lt;dbl&gt;      &lt;dbl&gt;
+1 catchmentsp.18~  1605970       101 NHDFlowli~     4.57        0.100   0.000432
+# ... with 1 more variable: geometry &lt;POLYGON [°]&gt;
+```
+]
+
+&lt;style&gt;
+.panel1-nhd-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-nhd-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-nhd-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+---
+
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+*library(leaflet)
+```
+]
+ 
+.panel2-interactive-auto[
+
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+*library(leafem)
+```
+]
+ 
+.panel2-interactive-auto[
+
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+*leaflet()
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-6405e5472e61b57ab318" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-6405e5472e61b57ab318">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}}},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+leaflet() %&gt;%
+* addProviderTiles(providers$Esri.WorldTopoMap)
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-451d8febbbdd29ecbd2d" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-451d8febbbdd29ecbd2d">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}]},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+leaflet() %&gt;%
+  addProviderTiles(providers$Esri.WorldTopoMap) %&gt;%
+* setView(-94.64, 31.09, 13)
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-af5208673abc00bd4082" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-af5208673abc00bd4082">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[31.09,-94.64],13,[]]},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+leaflet() %&gt;%
+  addProviderTiles(providers$Esri.WorldTopoMap) %&gt;%
+  setView(-94.64, 31.09, 13) %&gt;%
+* addPolygons(data = nhd,
+*             color = "green")
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-41d9250ae3fd598fa125" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-41d9250ae3fd598fa125">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+leaflet() %&gt;%
+  addProviderTiles(providers$Esri.WorldTopoMap) %&gt;%
+  setView(-94.64, 31.09, 13) %&gt;%
+  addPolygons(data = nhd,
+              color = "green") %&gt;%
+* addPolylines(data = nldi,
+*              color = "red",
+*              opacity = 1)
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-a7e4b6efee66cc3e1c9a" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-a7e4b6efee66cc3e1c9a">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-94.6484468057752,-94.6480323001742,-94.6477413028479,-94.6475796028972,-94.6476119011641,-94.6477413028479,-94.6478383019567,-94.6476119011641,-94.6474179029465,-94.6472562029958,-94.6470298022032,-94.6467065066099,-94.6464478000998,-94.6460274010897,-94.6455100029707,-94.6450573056936,-94.6447015032172,-94.6440871059895,-94.6436021029949,-94.6433110013604,-94.643020004034,-94.6425026059151,-94.6418235003948,-94.641273804009,-94.6406594067812,-94.6401420012116,-94.6396246030927,-94.6390748023987,-94.6387515068054,-94.6382988020778,-94.6378137022257,-94.637134604156,-94.6367466002703,-94.636617206037,-94.6363908052444,-94.6360028013587,-94.6355177015066,-94.6351297050714,-94.6346770003438,-94.6343859061599,-94.6344829052687,-94.6345476061106,-94.6341919004917,-94.633577503264,-94.6329307034612,-94.6323163062334,-94.6322517022491,-94.632542707026,-94.6328337043524,-94.6327044069767,-94.6321546062827,-94.6314756050706,-94.6309258043766,-94.6299668997526],"lat":[31.0991517975926,31.0987108945847,31.0980964973569,31.0976760983467,31.0971262976527,31.0966412946582,31.0960915982723,31.0954125002027,31.0947333946824,31.0939895957708,31.0933428928256,31.0927284955978,31.0921140983701,31.0917582958937,31.0914025977254,31.0908851996064,31.0904001966119,31.0897533968091,31.0891066938639,31.0884922966361,31.088007196784,31.0877161994576,31.0873280987144,31.0870693996549,31.0868753939867,31.0868753939867,31.0870693996549,31.087489798665,31.0878778994083,31.0882011950016,31.0883305966854,31.0882658958435,31.0882658958435,31.0886862948537,31.089041993022,31.0891713947058,31.0891066938639,31.0890096947551,31.0890096947551,31.0887832939625,31.0883305966854,31.0880394950509,31.0878778994083,31.0878454968333,31.0876837968826,31.0874574929476,31.0870047956705,31.0866166949272,31.0860669985414,31.0855495929718,31.0851291939616,31.0845794975758,31.0841266959906,31.0838033929467]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"red","weight":5,"opacity":1,"fill":false,"fillColor":"red","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":[]}</script>
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+leaflet() %&gt;%
+  addProviderTiles(providers$Esri.WorldTopoMap) %&gt;%
+  setView(-94.64, 31.09, 13) %&gt;%
+  addPolygons(data = nhd,
+              color = "green") %&gt;%
+  addPolylines(data = nldi,
+               color = "red",
+               opacity = 1) %&gt;%
+* leafem::addMouseCoordinates()
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-138685f2e669e47f3ce3" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-138685f2e669e47f3ce3">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-94.6484468057752,-94.6480323001742,-94.6477413028479,-94.6475796028972,-94.6476119011641,-94.6477413028479,-94.6478383019567,-94.6476119011641,-94.6474179029465,-94.6472562029958,-94.6470298022032,-94.6467065066099,-94.6464478000998,-94.6460274010897,-94.6455100029707,-94.6450573056936,-94.6447015032172,-94.6440871059895,-94.6436021029949,-94.6433110013604,-94.643020004034,-94.6425026059151,-94.6418235003948,-94.641273804009,-94.6406594067812,-94.6401420012116,-94.6396246030927,-94.6390748023987,-94.6387515068054,-94.6382988020778,-94.6378137022257,-94.637134604156,-94.6367466002703,-94.636617206037,-94.6363908052444,-94.6360028013587,-94.6355177015066,-94.6351297050714,-94.6346770003438,-94.6343859061599,-94.6344829052687,-94.6345476061106,-94.6341919004917,-94.633577503264,-94.6329307034612,-94.6323163062334,-94.6322517022491,-94.632542707026,-94.6328337043524,-94.6327044069767,-94.6321546062827,-94.6314756050706,-94.6309258043766,-94.6299668997526],"lat":[31.0991517975926,31.0987108945847,31.0980964973569,31.0976760983467,31.0971262976527,31.0966412946582,31.0960915982723,31.0954125002027,31.0947333946824,31.0939895957708,31.0933428928256,31.0927284955978,31.0921140983701,31.0917582958937,31.0914025977254,31.0908851996064,31.0904001966119,31.0897533968091,31.0891066938639,31.0884922966361,31.088007196784,31.0877161994576,31.0873280987144,31.0870693996549,31.0868753939867,31.0868753939867,31.0870693996549,31.087489798665,31.0878778994083,31.0882011950016,31.0883305966854,31.0882658958435,31.0882658958435,31.0886862948537,31.089041993022,31.0891713947058,31.0891066938639,31.0890096947551,31.0890096947551,31.0887832939625,31.0883305966854,31.0880394950509,31.0878778994083,31.0878454968333,31.0876837968826,31.0874574929476,31.0870047956705,31.0866166949272,31.0860669985414,31.0855495929718,31.0851291939616,31.0845794975758,31.0841266959906,31.0838033929467]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"red","weight":5,"opacity":1,"fill":false,"fillColor":"red","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n      function(el, x, data) {\n      // get the leaflet map\n      var map = this; //HTMLWidgets.find('#' + el.id);\n      // we need a new div element because we have to handle\n      // the mouseover output separately\n      // debugger;\n      function addElement () {\n      // generate new div Element\n      var newDiv = $(document.createElement('div'));\n      // append at end of leaflet htmlwidget container\n      $(el).append(newDiv);\n      //provide ID and style\n      newDiv.addClass('lnlt');\n      newDiv.css({\n      'position': 'relative',\n      'bottomleft':  '0px',\n      'background-color': 'rgba(255, 255, 255, 0.7)',\n      'box-shadow': '0 0 2px #bbb',\n      'background-clip': 'padding-box',\n      'margin': '0',\n      'padding-left': '5px',\n      'color': '#333',\n      'font': '9px/1.5 \"Helvetica Neue\", Arial, Helvetica, sans-serif',\n      'z-index': '700',\n      });\n      return newDiv;\n      }\n\n\n      // check for already existing lnlt class to not duplicate\n      var lnlt = $(el).find('.lnlt');\n\n      if(!lnlt.length) {\n      lnlt = addElement();\n\n      // grab the special div we generated in the beginning\n      // and put the mousmove output there\n\n      map.on('mousemove', function (e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                           ' lon: ' + (e.latlng.lng).toFixed(5) +\n                           ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                           ' | zoom: ' + map.getZoom() +\n                           ' | x: ' + L.CRS.EPSG3857.project(e.latlng).x.toFixed(0) +\n                           ' | y: ' + L.CRS.EPSG3857.project(e.latlng).y.toFixed(0) +\n                           ' | epsg: 3857 ' +\n                           ' | proj4: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs ');\n      } else {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      }\n      });\n\n      // remove the lnlt div when mouse leaves map\n      map.on('mouseout', function (e) {\n      var strip = document.querySelector('.lnlt');\n      if( strip !==null) strip.remove();\n      });\n\n      };\n\n      //$(el).keypress(67, function(e) {\n      map.on('preclick', function(e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      var txt = document.querySelector('.lnlt').textContent;\n      console.log(txt);\n      //txt.innerText.focus();\n      //txt.select();\n      setClipboardText('\"' + txt + '\"');\n      }\n      });\n\n      }\n      ).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+]
+
+---
+count: false
+ 
+# View catchments in leaflet
+.panel1-interactive-auto[
+
+```r
+library(leaflet)
+library(leafem)
+
+
+leaflet() %&gt;%
+  addProviderTiles(providers$Esri.WorldTopoMap) %&gt;%
+  setView(-94.64, 31.09, 13) %&gt;%
+  addPolygons(data = nhd,
+              color = "green") %&gt;%
+  addPolylines(data = nldi,
+               color = "red",
+               opacity = 1) %&gt;%
+  leafem::addMouseCoordinates()
+```
+]
+ 
+.panel2-interactive-auto[
+<div id="htmlwidget-8db0669cf69df6bf25af" style="width:504px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8db0669cf69df6bf25af">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-94.6484468057752,-94.6480323001742,-94.6477413028479,-94.6475796028972,-94.6476119011641,-94.6477413028479,-94.6478383019567,-94.6476119011641,-94.6474179029465,-94.6472562029958,-94.6470298022032,-94.6467065066099,-94.6464478000998,-94.6460274010897,-94.6455100029707,-94.6450573056936,-94.6447015032172,-94.6440871059895,-94.6436021029949,-94.6433110013604,-94.643020004034,-94.6425026059151,-94.6418235003948,-94.641273804009,-94.6406594067812,-94.6401420012116,-94.6396246030927,-94.6390748023987,-94.6387515068054,-94.6382988020778,-94.6378137022257,-94.637134604156,-94.6367466002703,-94.636617206037,-94.6363908052444,-94.6360028013587,-94.6355177015066,-94.6351297050714,-94.6346770003438,-94.6343859061599,-94.6344829052687,-94.6345476061106,-94.6341919004917,-94.633577503264,-94.6329307034612,-94.6323163062334,-94.6322517022491,-94.632542707026,-94.6328337043524,-94.6327044069767,-94.6321546062827,-94.6314756050706,-94.6309258043766,-94.6299668997526],"lat":[31.0991517975926,31.0987108945847,31.0980964973569,31.0976760983467,31.0971262976527,31.0966412946582,31.0960915982723,31.0954125002027,31.0947333946824,31.0939895957708,31.0933428928256,31.0927284955978,31.0921140983701,31.0917582958937,31.0914025977254,31.0908851996064,31.0904001966119,31.0897533968091,31.0891066938639,31.0884922966361,31.088007196784,31.0877161994576,31.0873280987144,31.0870693996549,31.0868753939867,31.0868753939867,31.0870693996549,31.087489798665,31.0878778994083,31.0882011950016,31.0883305966854,31.0882658958435,31.0882658958435,31.0886862948537,31.089041993022,31.0891713947058,31.0891066938639,31.0890096947551,31.0890096947551,31.0887832939625,31.0883305966854,31.0880394950509,31.0878778994083,31.0878454968333,31.0876837968826,31.0874574929476,31.0870047956705,31.0866166949272,31.0860669985414,31.0855495929718,31.0851291939616,31.0845794975758,31.0841266959906,31.0838033929467]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"red","weight":5,"opacity":1,"fill":false,"fillColor":"red","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":{"render":[{"code":"function(el, x, data) {\n  return (\n      function(el, x, data) {\n      // get the leaflet map\n      var map = this; //HTMLWidgets.find('#' + el.id);\n      // we need a new div element because we have to handle\n      // the mouseover output separately\n      // debugger;\n      function addElement () {\n      // generate new div Element\n      var newDiv = $(document.createElement('div'));\n      // append at end of leaflet htmlwidget container\n      $(el).append(newDiv);\n      //provide ID and style\n      newDiv.addClass('lnlt');\n      newDiv.css({\n      'position': 'relative',\n      'bottomleft':  '0px',\n      'background-color': 'rgba(255, 255, 255, 0.7)',\n      'box-shadow': '0 0 2px #bbb',\n      'background-clip': 'padding-box',\n      'margin': '0',\n      'padding-left': '5px',\n      'color': '#333',\n      'font': '9px/1.5 \"Helvetica Neue\", Arial, Helvetica, sans-serif',\n      'z-index': '700',\n      });\n      return newDiv;\n      }\n\n\n      // check for already existing lnlt class to not duplicate\n      var lnlt = $(el).find('.lnlt');\n\n      if(!lnlt.length) {\n      lnlt = addElement();\n\n      // grab the special div we generated in the beginning\n      // and put the mousmove output there\n\n      map.on('mousemove', function (e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                           ' lon: ' + (e.latlng.lng).toFixed(5) +\n                           ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                           ' | zoom: ' + map.getZoom() +\n                           ' | x: ' + L.CRS.EPSG3857.project(e.latlng).x.toFixed(0) +\n                           ' | y: ' + L.CRS.EPSG3857.project(e.latlng).y.toFixed(0) +\n                           ' | epsg: 3857 ' +\n                           ' | proj4: +proj=merc +a=6378137 +b=6378137 +lat_ts=0.0 +lon_0=0.0 +x_0=0.0 +y_0=0 +k=1.0 +units=m +nadgrids=@null +no_defs ');\n      } else {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      }\n      });\n\n      // remove the lnlt div when mouse leaves map\n      map.on('mouseout', function (e) {\n      var strip = document.querySelector('.lnlt');\n      if( strip !==null) strip.remove();\n      });\n\n      };\n\n      //$(el).keypress(67, function(e) {\n      map.on('preclick', function(e) {\n      if (e.originalEvent.ctrlKey) {\n      if (document.querySelector('.lnlt') === null) lnlt = addElement();\n      lnlt.text(\n                      ' lon: ' + (e.latlng.lng).toFixed(5) +\n                      ' | lat: ' + (e.latlng.lat).toFixed(5) +\n                      ' | zoom: ' + map.getZoom() + ' ');\n      var txt = document.querySelector('.lnlt').textContent;\n      console.log(txt);\n      //txt.innerText.focus();\n      //txt.select();\n      setClipboardText('\"' + txt + '\"');\n      }\n      });\n\n      }\n      ).call(this.getMap(), el, x, data);\n}","data":null}]}}</script>
+]
+
+&lt;style&gt;
+.panel1-interactive-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-interactive-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-interactive-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+.pull-left[
+
+
+---
+
+
+count: false
+ 
+# Load NWM historical data using nwmTools package
+.panel1-nwm-auto[
+
+```r
+*# library(nwmTools)  # library(nwmTools)
+```
+]
+ 
+.panel2-nwm-auto[
+
+]
+
+---
+count: false
+ 
+# Load NWM historical data using nwmTools package
+.panel1-nwm-auto[
+
+```r
+# library(nwmTools)  # library(nwmTools)
+*# library(dygraphs)  # library(dygraphs)
+```
+]
+ 
+.panel2-nwm-auto[
+
+]
+
+---
+count: false
+ 
+# Load NWM historical data using nwmTools package
+.panel1-nwm-auto[
+
+```r
+# library(nwmTools)  # library(nwmTools)
+# library(dygraphs)  # library(dygraphs)
+
+*# nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)  # nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)
+```
+]
+ 
+.panel2-nwm-auto[
+
+]
+
+---
+count: false
+ 
+# Load NWM historical data using nwmTools package
+.panel1-nwm-auto[
+
+```r
+# library(nwmTools)  # library(nwmTools)
+# library(dygraphs)  # library(dygraphs)
+
+# nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)  # nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)
+# dygraph
+```
+]
+ 
+.panel2-nwm-auto[
+
+]
+
+&lt;style&gt;
+.panel1-nwm-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-nwm-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-nwm-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+
+
+---
+
+count: false
+ 
+# Load climate data using climateR package
+.panel1-climate-auto[
+
+```r
+*library(climateR)
+```
+]
+ 
+.panel2-climate-auto[
+
+]
+
+---
+count: false
+ 
+# Load climate data using climateR package
+.panel1-climate-auto[
+
+```r
+library(climateR)
+*library(sf)
+```
+]
+ 
+.panel2-climate-auto[
+
+]
+
+---
+count: false
+ 
+# Load climate data using climateR package
+.panel1-climate-auto[
+
+```r
+library(climateR)
+library(sf)
+*library(dygraphs)
+```
+]
+ 
+.panel2-climate-auto[
+
+]
+
+---
+count: false
+ 
+# Load climate data using climateR package
+.panel1-climate-auto[
+
+```r
+library(climateR)
+library(sf)
+library(dygraphs)
+
+*# pt &lt;- st_centroid(nldi)  # pt &lt;- st_centroid(nldi)
+```
+]
+ 
+.panel2-climate-auto[
+
+]
+
+---
+count: false
+ 
+# Load climate data using climateR package
+.panel1-climate-auto[
+
+```r
+library(climateR)
+library(sf)
+library(dygraphs)
+
+# pt &lt;- st_centroid(nldi)  # pt &lt;- st_centroid(nldi)
+*# precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2010-01-01", endDate = "2014-01-01")  # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2010-01-01", endDate = "2014-01-01")
+```
+]
+ 
+.panel2-climate-auto[
+
+]
+
+---
+count: false
+ 
+# Load climate data using climateR package
+.panel1-climate-auto[
+
+```r
+library(climateR)
+library(sf)
+library(dygraphs)
+
+# pt &lt;- st_centroid(nldi)  # pt &lt;- st_centroid(nldi)
+# precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2010-01-01", endDate = "2014-01-01")  # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2010-01-01", endDate = "2014-01-01")
+*climate_graph(precip, "Volume (mm)")
+```
+]
+ 
+.panel2-climate-auto[
+<div id="htmlwidget-fdb5437c4102071ab16a" style="width:504px;height:504px;" class="dygraphs html-widget"></div>
+<script type="application/json" data-for="htmlwidget-fdb5437c4102071ab16a">{"x":{"attrs":{"ylabel":"Volume (mm)","labels":["month","prcp"],"legend":"auto","retainDateWindow":false,"axes":{"x":{"pixelsPerLabel":60,"drawAxis":true},"y":{"drawAxis":true}},"highlightCircleSize":4,"highlightSeriesBackgroundAlpha":0.4,"highlightSeriesOpts":[],"hideOverlayOnMouseOut":true,"stackedGraph":false,"fillGraph":true,"fillAlpha":0.15,"stepPlot":false,"drawPoints":false,"pointSize":1,"drawGapEdgePoints":false,"connectSeparatedPoints":false,"strokeWidth":1,"strokeBorderColor":"white","colors":["navy"],"colorValue":0.5,"colorSaturation":1,"includeZero":false,"drawAxesAtZero":false,"logscale":false,"axisTickSize":3,"axisLineColor":"black","axisLineWidth":0.3,"axisLabelColor":"black","axisLabelFontSize":14,"axisLabelWidth":60,"drawGrid":true,"gridLineWidth":0.3,"rightGap":5,"digitsAfterDecimal":2,"labelsKMB":false,"labelsKMG2":false,"labelsUTC":false,"maxNumberWidth":6,"animatedZooms":false,"mobileDisableYTouch":true,"disableZoom":false},"scale":"monthly","annotations":[],"shadings":[],"events":[],"format":"date","data":[["2010-01-01T08:00:00.000Z","2010-02-01T08:00:00.000Z","2010-03-01T08:00:00.000Z","2010-04-01T07:00:00.000Z","2010-05-01T07:00:00.000Z","2010-06-01T07:00:00.000Z","2010-07-01T07:00:00.000Z","2010-08-01T07:00:00.000Z","2010-09-01T07:00:00.000Z","2010-10-01T07:00:00.000Z","2010-11-01T07:00:00.000Z","2010-12-01T08:00:00.000Z","2011-01-01T08:00:00.000Z","2011-02-01T08:00:00.000Z","2011-03-01T08:00:00.000Z","2011-04-01T07:00:00.000Z","2011-05-01T07:00:00.000Z","2011-06-01T07:00:00.000Z","2011-07-01T07:00:00.000Z","2011-08-01T07:00:00.000Z","2011-09-01T07:00:00.000Z","2011-10-01T07:00:00.000Z","2011-11-01T07:00:00.000Z","2011-12-01T08:00:00.000Z","2012-01-01T08:00:00.000Z","2012-02-01T08:00:00.000Z","2012-03-01T08:00:00.000Z","2012-04-01T07:00:00.000Z","2012-05-01T07:00:00.000Z","2012-06-01T07:00:00.000Z","2012-07-01T07:00:00.000Z","2012-08-01T07:00:00.000Z","2012-09-01T07:00:00.000Z","2012-10-01T07:00:00.000Z","2012-11-01T07:00:00.000Z","2012-12-01T08:00:00.000Z","2013-01-01T08:00:00.000Z","2013-02-01T08:00:00.000Z","2013-03-01T08:00:00.000Z","2013-04-01T07:00:00.000Z","2013-05-01T07:00:00.000Z","2013-06-01T07:00:00.000Z","2013-07-01T07:00:00.000Z","2013-08-01T07:00:00.000Z","2013-09-01T07:00:00.000Z","2013-10-01T07:00:00.000Z","2013-11-01T07:00:00.000Z","2013-12-01T08:00:00.000Z","2014-01-01T08:00:00.000Z"],[90,131,67,25,87,111,200,31,118,11,95,64,120,37,77,18,28,37,37,6,45,118,78,163,95,239,176,68,126,122,148,112,168,42,24,101,174,76,40,110,86,131,58,51,168,198,83,51,32]],"fixedtz":false,"tzone":""},"evals":[],"jsHooks":[]}</script>
+]
+
+&lt;style&gt;
+.panel1-climate-auto {
+  color: black;
+  width: 38.6060606060606%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel2-climate-auto {
+  color: black;
+  width: 59.3939393939394%;
+  hight: 32%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+.panel3-climate-auto {
+  color: black;
+  width: NA%;
+  hight: 33%;
+  float: left;
+  padding-left: 1%;
+  font-size: 80%
+}
+&lt;/style&gt;
+
+
+.pull-left[
+
+---
+# Contact info
+
+- **email:** adwattersgrubstein@ucsb.edu
+
+- **phone:** (805) 895-1590
+
+- **GitHub:** https://github.com/anguswg-ucsb
+
+
+--
+
+- Thank you for listening to my idea!
+
+--
+
+---
+    </textarea>
+<style data-target="print-only">@media screen {.remark-slide-container{display:block;}.remark-slide-scaler{box-shadow:none;}}</style>
+<script src="https://remarkjs.com/downloads/remark-latest.min.js"></script>
+<script>var slideshow = remark.create({
+"ratio": "16:10",
+"highlightStyle": "github",
+"highlightLines": true,
+"countIncrementalSlides": false
+});
+if (window.HTMLWidgets) slideshow.on('afterShowSlide', function (slide) {
+  window.dispatchEvent(new Event('resize'));
+});
+(function(d) {
+  var s = d.createElement("style"), r = d.querySelector(".remark-slide-scaler");
+  if (!r) return;
+  s.type = "text/css"; s.innerHTML = "@page {size: " + r.style.width + " " + r.style.height +"; }";
+  d.head.appendChild(s);
+})(document);
+
+(function(d) {
+  var el = d.getElementsByClassName("remark-slides-area");
+  if (!el) return;
+  var slide, slides = slideshow.getSlides(), els = el[0].children;
+  for (var i = 1; i < slides.length; i++) {
+    slide = slides[i];
+    if (slide.properties.continued === "true" || slide.properties.count === "false") {
+      els[i - 1].className += ' has-continuation';
+    }
+  }
+  var s = d.createElement("style");
+  s.type = "text/css"; s.innerHTML = "@media print { .has-continuation { display: none; } }";
+  d.head.appendChild(s);
+})(document);
+// delete the temporary CSS (for displaying all slides initially) when the user
+// starts to view slides
+(function() {
+  var deleted = false;
+  slideshow.on('beforeShowSlide', function(slide) {
+    if (deleted) return;
+    var sheets = document.styleSheets, node;
+    for (var i = 0; i < sheets.length; i++) {
+      node = sheets[i].ownerNode;
+      if (node.dataset["target"] !== "print-only") continue;
+      node.parentNode.removeChild(node);
+    }
+    deleted = true;
+  });
+})();
+(function() {
+  "use strict"
+  // Replace <script> tags in slides area to make them executable
+  var scripts = document.querySelectorAll(
+    '.remark-slides-area .remark-slide-container script'
+  );
+  if (!scripts.length) return;
+  for (var i = 0; i < scripts.length; i++) {
+    var s = document.createElement('script');
+    var code = document.createTextNode(scripts[i].textContent);
+    s.appendChild(code);
+    var scriptAttrs = scripts[i].attributes;
+    for (var j = 0; j < scriptAttrs.length; j++) {
+      s.setAttribute(scriptAttrs[j].name, scriptAttrs[j].value);
+    }
+    scripts[i].parentElement.replaceChild(s, scripts[i]);
+  }
+})();
+(function() {
+  var links = document.getElementsByTagName('a');
+  for (var i = 0; i < links.length; i++) {
+    if (/^(https?:)?\/\//.test(links[i].getAttribute('href'))) {
+      links[i].target = '_blank';
+    }
+  }
+})();
+// adds .remark-code-has-line-highlighted class to <pre> parent elements
+// of code chunks containing highlighted lines with class .remark-code-line-highlighted
+(function(d) {
+  const hlines = d.querySelectorAll('.remark-code-line-highlighted');
+  const preParents = [];
+  const findPreParent = function(line, p = 0) {
+    if (p > 1) return null; // traverse up no further than grandparent
+    const el = line.parentElement;
+    return el.tagName === "PRE" ? el : findPreParent(el, ++p);
+  };
+
+  for (let line of hlines) {
+    let pre = findPreParent(line);
+    if (pre && !preParents.includes(pre)) preParents.push(pre);
+  }
+  preParents.forEach(p => p.classList.add("remark-code-has-line-highlighted"));
+})(document);</script>
+
+<script>
+slideshow._releaseMath = function(el) {
+  var i, text, code, codes = el.getElementsByTagName('code');
+  for (i = 0; i < codes.length;) {
+    code = codes[i];
+    if (code.parentNode.tagName !== 'PRE' && code.childElementCount === 0) {
+      text = code.textContent;
+      if (/^\\\((.|\s)+\\\)$/.test(text) || /^\\\[(.|\s)+\\\]$/.test(text) ||
+          /^\$\$(.|\s)+\$\$$/.test(text) ||
+          /^\\begin\{([^}]+)\}(.|\s)+\\end\{[^}]+\}$/.test(text)) {
+        code.outerHTML = code.innerHTML;  // remove <code></code>
+        continue;
+      }
+    }
+    i++;
+  }
+};
+slideshow._releaseMath(document);
+</script>
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+(function () {
+  var script = document.createElement('script');
+  script.type = 'text/javascript';
+  script.src  = 'https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-MML-AM_CHTML';
+  if (location.protocol !== 'file:' && /^https?:/.test(script.src))
+    script.src  = script.src.replace(/^https?:/, '');
+  document.getElementsByTagName('head')[0].appendChild(script);
+})();
+</script>
+  </body>
+</html>

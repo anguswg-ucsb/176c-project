@@ -1,0 +1,186 @@
+---
+title: "Geography 176C"
+subtitle: "NWM catchments and flow data"
+author: "Angus Watters"
+output:
+  xaringan::moon_reader:
+    lib_dir: libs
+    css: ucsb.css
+    nature:
+      ratio: 16:10
+      highlightStyle: github
+      highlightLines: true
+      countIncrementalSlides: false
+---
+
+```{css, eval = TRUE, echo = FALSE}
+.remark-code{line-height: 2; font-size: 60%}
+```
+```{r, include = F}
+knitr::opts_chunk$set(fig.width = 7, message = FALSE, warning = FALSE, comment = "", cache = FALSE, fig.retina = 3)
+library(flipbookr)
+library(gapminder)
+library(tidyverse)
+
+precip <- readRDS("../docs/precip.rds")
+
+climate_graph <- function(df, lab) {
+  df$date <- paste0(df$date, "-01")
+  df$date <- as.Date(df$date)
+  rownames(df) <- df$date
+  df <- select(df, 5)
+
+  dygraph(data = df,
+            ylab = as.character(lab)) %>% 
+      dyHighlight(highlightCircleSize = 4,
+                  highlightSeriesBackgroundAlpha = .4) %>%
+      dyOptions(colors = c("navy"),
+                fillGraph = TRUE)
+}
+```
+
+# *Lightning talk!*
+
+---
+
+# **The National Water Model (NWM)**
+
+- The National Water Model (NWM) is a hydrologic modelling framework that simulates observed and forecast streamflow over the entire continental United States (CONUS). 
+
+- The NWM simulates the water cycle with mathematical representations of the different processes and how they fit together.
+
+--
+
+# **Motivation**
+
+- The NWM obtains data from over 8000 USGS stream gauges in the Nation and uses this data to expand forecasts to over 2.7 million stream locations nationwide.
+
+- This also means that there is a huge amount of historical streamflow data avalialbe at all these locations.
+
+---
+
+# **Problem**
+There is **NOT** an easy way to view catchments and simulataneously view historical stream flow data for the catchment.
+  - The data is all there but currently there isn't a quick and easy way to view both the catchment geometry and timeseries data on demand.  
+
+--
+
+# **Solution**
+- Create a ***R Shiny dashboard*** that allows the user to explore all watershed catchments in the US and get on demand streamflow data
+
+--
+
+- This project will be created in R using these **R packages**:
+  - `tidyr`
+  - `dplyer`
+  - `sf`
+  - `leaflet`
+  - `dataRetrieval`
+  - `nhdplusTools`
+  - `nwmTools`
+  - `shiny`
+  
+---
+
+# **Research questions**
+
+--
+
+**1. What is the relative impact of certain geographic factors on stream flows?**
+
+--
+  - Proximity to a dam, population density, land cover
+
+--
+
+<br>
+
+**2. Forecast stream flow rates using precipitation and water withdrawals in a multilayer perceptron Machine learning algorithm**
+
+
+---
+`r flipbookr::chunk_reveal("nldi", title = "# Find Common ID from a lat/lng point")`
+```{r nldi, include=FALSE}
+library(dataRetrieval)
+
+nldi <- findNLDI(location = c(-94.64, 31.09))
+nldi 
+
+```
+
+---
+
+`r flipbookr::chunk_reveal("nhd", title = "# Find catchment polygons using NHD Common ID")`
+```{r nhd, include = FALSE}
+library(nhdplusTools)
+
+nhd <- get_nhdplus(comid = nldi$comid, 
+                   realization = "catchment")
+nhd
+
+```
+
+---
+
+`r flipbookr::chunk_reveal("interactive", title = "# View catchments in leaflet")`
+.pull-left[
+```{r interactive, include = FALSE}
+library(leaflet)
+library(leafem)
+
+
+leaflet() %>% 
+  addProviderTiles(providers$Esri.WorldTopoMap) %>% 
+  setView(-94.64, 31.09, 13) %>%  
+  addPolygons(data = nhd,
+              color = "green") %>% 
+  addPolylines(data = nldi,
+               color = "red",
+               opacity = 1) %>% 
+  leafem::addMouseCoordinates()
+
+```
+
+---
+
+
+`r flipbookr::chunk_reveal("nwm", title = "# Load NWM historical data using nwmTools package")`
+
+```{r nwm, include = FALSE, eval = FALSE}
+# library(nwmTools)
+# library(dygraphs)
+
+# nwm <- nwmTools::readNWMdata(comid =nldi$comid)
+# dygraph
+```
+---
+
+`r flipbookr::chunk_reveal("climate", title = "# Load climate data using climateR package")`
+.pull-left[
+```{r climate, include = FALSE}
+library(climateR)
+library(sf)
+library(dygraphs)
+
+# pt <- st_centroid(nldi)
+# precip <- getTerraClim(AOI = pt, param = "prcp", startDate = "2010-01-01", endDate = "2014-01-01")
+climate_graph(precip, "Volume (mm)")
+```
+---
+# Contact info
+
+- **email:** adwattersgrubstein@ucsb.edu
+
+- **phone:** (805) 895-1590
+
+- **GitHub:** https://github.com/anguswg-ucsb
+
+
+--
+
+- Thank you for listening to my idea!
+
+--
+
+---
+
