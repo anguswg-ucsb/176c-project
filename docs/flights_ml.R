@@ -54,7 +54,11 @@ flights_wflow  <- workflow() %>%
 flights_fit <- flights_wflow %>%
   fit(data = train_data)
 
+predict(flights_fit, test_data)
 
+flights_pred <-
+  predict(flights_fit, test_data, type = "prob") %>%
+  bind_cols(test_data %>% select(arr_delay, time_hour, flight))
 
 
 

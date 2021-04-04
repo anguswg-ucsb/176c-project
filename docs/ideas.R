@@ -96,6 +96,48 @@ nwis_sites <- whatNWISsites(bBox = bb)
 dataRetrieval::readWQPqw()
 
 
+# Geog 190 question 2.4
+library(tidyverse)
+  Plot_ConvexHull<-function(xcoord, ycoord, lcolor){
+    hpts <- chull(x = xcoord, y = ycoord)
+    hpts <- c(hpts, hpts[1])
+    lines(xcoord[hpts], ycoord[hpts], col = lcolor)
+  }
+df <- data.frame(x = c(32, 29, 27, 29, 32, 26, 24, 30), y = c( 31, 32, 36, 29,29, 25, 33,35))
+
+
+# df <- df %>%
+#   mutate(pts = paste0(x, ", ", y))
+x1 <- rnorm(100, 0.8, 0.3)
+y1 <- rnorm(100, 0.8, 0.3)
+rm(x1, y1)
+xrange <- range(df$x)
+yrange <- range(df$y)
+xmin = min(df$x)
+xmax = max(df$x)
+ymin = min(df$y)
+ymax = max(df$y)
+
+plot(df$x, df$y, type = "p", pch = 1, color = "black", xlim = c(xrange), ylim = c(yrange))
+Plot_ConvexHull(xcoord = df$x, ycoord = df$y, lcolor = "black")
+
+ch
+
+
+getBoundingBox <- function(xy) {
+  stopifnot(is.matrix(xy), is.numeric(xy), ncol(xy) == 2)
+  x   <- range(xy[ , 1])
+  y   <- range(xy[ , 2])
+  pts <- c(xleft=x[1], ybottom=y[1], xright=x[2], ytop=y[2])
+  return(list(pts=pts, width=abs(diff(x)), height=abs(diff(y))))
+}
+
+xy <- as.matrix(df)
+bb <- getBoundingBox(xy)
+
+plot(xy, xlab="x", ylab="y", asp=1, type="n")
+rect(bb$pts[1], bb$pts[2], bb$pts[3], bb$pts[4], border="blue", lwd="2")
+points(xy, pch=16, cex=1.5)
 
 
 
