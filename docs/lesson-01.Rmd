@@ -215,8 +215,6 @@ graph_climateR(precip, evap)
 
 - **email:** adwattersgrubstein@ucsb.edu
 
-- **phone:** (805) 895-1590
-
 - **GitHub:** https://github.com/anguswg-ucsb
 
 
