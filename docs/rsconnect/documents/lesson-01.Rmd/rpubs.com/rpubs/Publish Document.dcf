@@ -1,0 +1,10 @@
+name: Publish Document
+title:
+username:
+account: rpubs
+server: rpubs.com
+hostUrl: rpubs.com
+appId: https://api.rpubs.com/api/v1/document/750010/75ef05e215654985a781387d9a2f236c
+bundleId: https://api.rpubs.com/api/v1/document/750010/75ef05e215654985a781387d9a2f236c
+url: http://rpubs.com/anguswg/750010
+when: 1617637071.00141

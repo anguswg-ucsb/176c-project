@@ -1,6 +1,6 @@
 ---
-title: "Geography 176C"
-subtitle: "NWM catchments and flow data"
+title: "NWM Shiny application"
+subtitle: "Geography 176C"
 author: "Angus Watters"
 output:
   xaringan::moon_reader:
@@ -23,24 +23,17 @@ library(tidyverse)
 library(cowplot)
 library(ggplot2)
 library(highcharter)
+library(dataRetrieval)
+library(climateR)
+
 precip <- readRDS("../docs/precip2.rds")
 evap <- readRDS("../docs/evap2.rds")
+nwm <- readRDS("../docs/nwm.rds")
 
-# climate_graph <- function(df, lab) {
-#   df$date <- paste0(df$date, "-01")
-#   df$date <- as.Date(df$date)
-#   rownames(df) <- df$date
-#   df <- select(df, 5)
-# 
-#   dygraph(data = df,
-#             ylab = as.character(lab)) %>% 
-#       dyHighlight(highlightCircleSize = 4,
-#                   highlightSeriesBackgroundAlpha = .4) %>%
-#       dyOptions(colors = c("navy"),
-#                 fillGraph = TRUE)
-# }
+flowline <- findNLDI(location = c(-94.64, 31.09))
+pt <- sf::st_centroid(flowline)
 
-climate_graph <- function(df1, df2) {
+graph_climateR <- function(df1, df2) {
     highchart() %>%
       hc_yAxis_multiples(list(title = list(text = "Accumulated Precipitation (mm)"),
                             min=0,
@@ -58,6 +51,17 @@ climate_graph <- function(df1, df2) {
       hc_colors(c("darkcyan", "darkred")) %>% 
           hc_xAxis(categories = df1$date) 
 }
+
+
+graph_NWM <- function(df) {
+    highchart() %>%
+      hc_add_series(df, name = "Streamflow", type = "column",
+                    hcaes(x = date, y = vpd)) %>%
+      hc_colors("darkcyan") %>% 
+      hc_xAxis(categories = df$date) %>% 
+      hc_yAxis(title = list(text = "Discharge (m³/s)"))
+}
+
 # p1 <- ggdraw() + draw_image("map-icon.jpg", scale = 0.9)
 # p2 <- ggdraw() + draw_image("arrow-icon.png", scale = 0.9)
 # p3 <- ggdraw() + draw_image("click-icon.jpg", scale = 0.9)
@@ -67,29 +71,32 @@ climate_graph <- function(df1, df2) {
 # pics <- plot_grid(p1, p2, p3, p4, p5, nrow = 1)
 ```
 
-# *Shiny dashboard for streamflow data*
-
+# **R Shiny streamflow application**
+<center>
+```{r, echo = FALSE,  out.width = "85%"}
+knitr::include_graphics('nwm_conus.png')
+```
+</center>
 ---
 
 # **The National Water Model (NWM)**
+<center>
+- The National Water Model (NWM) project uses USGS stream gauges to simulate the water cycle processes using  mathematical representations for different processes to see how the processes fit together.
 
-- The National Water Model (NWM) is a hydrologic modelling framework that simulates observed and forecast streamflow over the entire continental United States (CONUS). 
+<br>
+<br>
 
-- The NWM simulates the water cycle with mathematical representations of the different processes and how they fit together.
+```{r, echo = FALSE,  out.width = "65%"}
+knitr::include_graphics('pic2.png')
+```
+</center>
 
---
-
-# **Motivation**
-
-- The NWM obtains data from over 8000 USGS stream gauges in the Nation and uses this data to expand forecasts to over 2.7 million stream locations nationwide.
-
-- This also means that there is a huge amount of historical stream flow data available at all these locations.
 
 ---
 
 # **Problem**
-There is **NOT** an easy way to view catchments and simultaneously view historical stream flow data for the catchment.
-  - The data is all there but currently there isn't a quick and easy way to view both the catchment geometry and time series data on demand.  
+There is **NOT** an easy way to view simultaneously view catchments + stream flow data 
+
 
 --
 
@@ -134,7 +141,7 @@ knitr::include_graphics('icons.png')
   - `shiny`
   
 ---
-`r flipbookr::chunk_reveal("nldi", title = "# Find Common ID at clicked point")`
+`r flipbookr::chunk_reveal("nldi", title = "# Find flowline from map click")`
 ```{r nldi, include=FALSE}
 library(dataRetrieval)
 
@@ -176,20 +183,20 @@ leaflet() %>%
 ---
 
 
-`r flipbookr::chunk_reveal("nwm", title = "# Load NWM historical data using nwmTools package")`
+`r flipbookr::chunk_reveal("nwm", title = "# NWM data using nwmTools package")`
 
-```{r nwm, include = FALSE, eval = FALSE}
-# library(nwmTools)
-# library(dygraphs)
+```{r nwm, include = FALSE, error=TRUE, eval = FALSE}
+library(nwmTools)
 
-# Retrieve flow data from the National water model via a COMID
-# nwm <- nwmTools::readNWMdata(comid =nldi$comid)
-# dygraph
+# Retrieve flow data from NWM via COMID
+
+# nwm <- nwmTools::readNWMdata(comid = 101)
+graph_NWM(nwm)
 ```
 ---
 
-`r flipbookr::chunk_reveal("climate", title = "# Load climate data using climateR package")`
-.pull-left[
+`r flipbookr::chunk_reveal("climate", title = "# Climate data using climateR package")`
+
 ```{r climate, include = FALSE, out.width=9}
 library(climateR)
 library(sf)
@@ -201,7 +208,7 @@ pt <- st_centroid(flowline)
 # precip <- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")
 # evap <- getTerraClim(AOI = pt, param = "aet", startDate = "2011-01-01", endDate = "2014-01-01")
 
-climate_graph(precip, evap)
+graph_climateR(precip, evap)
 ```
 ---
 # Contact info

@@ -1,7 +1,7 @@
 <!DOCTYPE html>
 <html lang="" xml:lang="">
   <head>
-    <title>Geography 176C</title>
+    <title>NWM Shiny application</title>
     <meta charset="utf-8" />
     <meta name="author" content="Angus Watters" />
     <script src="libs/htmlwidgets-1.5.3/htmlwidgets.js"></script>
@@ -62,8 +62,8 @@
     <textarea id="source">
 class: center, middle, inverse, title-slide
 
-# Geography 176C
-## NWM catchments and flow data
+# NWM Shiny application
+## Geography 176C
 ### Angus Watters
 
 ---
@@ -74,29 +74,28 @@ class: center, middle, inverse, title-slide
 &lt;/style&gt;
 
 
-# *Lightning talk!*
-
+# **R Shiny streamflow application**
+&lt;center&gt;
+&lt;img src="nwm_conus.png" width="85%" /&gt;
+&lt;/center&gt;
 ---
 
 # **The National Water Model (NWM)**
+&lt;center&gt;
+- The National Water Model (NWM) project uses USGS stream gauges to simulate the water cycle processes using  mathematical representations for different processes to see how the processes fit together.
 
-- The National Water Model (NWM) is a hydrologic modelling framework that simulates observed and forecast streamflow over the entire continental United States (CONUS). 
+&lt;br&gt;
+&lt;br&gt;
 
-- The NWM simulates the water cycle with mathematical representations of the different processes and how they fit together.
+&lt;img src="pic2.png" width="65%" /&gt;
+&lt;/center&gt;
 
---
-
-# **Motivation**
-
-- The NWM obtains data from over 8000 USGS stream gauges in the Nation and uses this data to expand forecasts to over 2.7 million stream locations nationwide.
-
-- This also means that there is a huge amount of historical streamflow data avalialbe at all these locations.
 
 ---
 
 # **Problem**
-There is **NOT** an easy way to view catchments and simulataneously view historical stream flow data for the catchment.
-  - The data is all there but currently there isn't a quick and easy way to view both the catchment geometry and timeseries data on demand.  
+There is **NOT** an easy way to view simultaneously view catchments + stream flow data 
+
 
 --
 
@@ -128,7 +127,7 @@ There is **NOT** an easy way to view catchments and simulataneously view histori
 
 --
 
-- This project will be created in R using these **R packages**:
+- Project and data retrieval will use these **R packages**:
   - `tidyr`
   - `dplyer`
   - `sf`
@@ -141,7 +140,7 @@ There is **NOT** an easy way to view catchments and simulataneously view histori
 ---
 count: false
  
-# Find Common ID at clicked point
+# Find flowline from map click
 .panel1-nldi-auto[
 
 ```r
@@ -156,7 +155,7 @@ count: false
 ---
 count: false
  
-# Find Common ID at clicked point
+# Find flowline from map click
 .panel1-nldi-auto[
 
 ```r
@@ -174,7 +173,7 @@ library(dataRetrieval)
 ---
 count: false
  
-# Find Common ID at clicked point
+# Find flowline from map click
 .panel1-nldi-auto[
 
 ```r
@@ -204,7 +203,7 @@ geographic CRS: WGS 84
 ---
 count: false
  
-# Find Common ID at clicked point
+# Find flowline from map click
 .panel1-nldi-auto[
 
 ```r
@@ -286,7 +285,7 @@ count: false
 ```r
 library(nhdplusTools)
 
-# Get National Hydrography Dataset V2 Subsets
+# Get catchment polygons from National Hydrography Dataset V2 Subsets
 *catchment &lt;- get_nhdplus(comid = flowline$comid,
 *                  realization = "catchment")
 ```
@@ -305,7 +304,7 @@ count: false
 ```r
 library(nhdplusTools)
 
-# Get National Hydrography Dataset V2 Subsets
+# Get catchment polygons from National Hydrography Dataset V2 Subsets
 catchment &lt;- get_nhdplus(comid = flowline$comid,
                    realization = "catchment")
 *catchment
@@ -337,7 +336,7 @@ count: false
 ```r
 library(nhdplusTools)
 
-# Get National Hydrography Dataset V2 Subsets
+# Get catchment polygons from National Hydrography Dataset V2 Subsets
 catchment &lt;- get_nhdplus(comid = flowline$comid,
                    realization = "catchment")
 catchment
@@ -420,8 +419,8 @@ library(leaflet)
 ]
  
 .panel2-interactive-auto[
-<div id="htmlwidget-19510ad030764c99852f" style="width:576px;height:504px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-19510ad030764c99852f">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-7a85a9c741013418103e" style="width:576px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-7a85a9c741013418103e">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}}},"evals":[],"jsHooks":[]}</script>
 ]
 
 ---
@@ -439,8 +438,8 @@ leaflet() %&gt;%
 ]
  
 .panel2-interactive-auto[
-<div id="htmlwidget-e65a3e1ae50134c12088" style="width:576px;height:504px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-e65a3e1ae50134c12088">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}]},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d8cb53135e731f4e714e" style="width:576px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d8cb53135e731f4e714e">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}]},"evals":[],"jsHooks":[]}</script>
 ]
 
 ---
@@ -459,8 +458,8 @@ leaflet() %&gt;%
 ]
  
 .panel2-interactive-auto[
-<div id="htmlwidget-4fd2357f06d5e5b7bc5c" style="width:576px;height:504px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-4fd2357f06d5e5b7bc5c">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[31.09,-94.64],13,[]]},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-98e8dcc02b3eab62bbb9" style="width:576px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-98e8dcc02b3eab62bbb9">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]}],"setView":[[31.09,-94.64],13,[]]},"evals":[],"jsHooks":[]}</script>
 ]
 
 ---
@@ -481,8 +480,8 @@ leaflet() %&gt;%
 ]
  
 .panel2-interactive-auto[
-<div id="htmlwidget-096bbec1189c42d8750b" style="width:576px;height:504px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-096bbec1189c42d8750b">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-23013c9092bf4dec3962" style="width:576px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-23013c9092bf4dec3962">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":[]}</script>
 ]
 
 ---
@@ -506,8 +505,8 @@ leaflet() %&gt;%
 ]
  
 .panel2-interactive-auto[
-<div id="htmlwidget-14ec07ed005a28d02b35" style="width:576px;height:504px;" class="leaflet html-widget"></div>
-<script type="application/json" data-for="htmlwidget-14ec07ed005a28d02b35">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-94.6484468057752,-94.6480323001742,-94.6477413028479,-94.6475796028972,-94.6476119011641,-94.6477413028479,-94.6478383019567,-94.6476119011641,-94.6474179029465,-94.6472562029958,-94.6470298022032,-94.6467065066099,-94.6464478000998,-94.6460274010897,-94.6455100029707,-94.6450573056936,-94.6447015032172,-94.6440871059895,-94.6436021029949,-94.6433110013604,-94.643020004034,-94.6425026059151,-94.6418235003948,-94.641273804009,-94.6406594067812,-94.6401420012116,-94.6396246030927,-94.6390748023987,-94.6387515068054,-94.6382988020778,-94.6378137022257,-94.637134604156,-94.6367466002703,-94.636617206037,-94.6363908052444,-94.6360028013587,-94.6355177015066,-94.6351297050714,-94.6346770003438,-94.6343859061599,-94.6344829052687,-94.6345476061106,-94.6341919004917,-94.633577503264,-94.6329307034612,-94.6323163062334,-94.6322517022491,-94.632542707026,-94.6328337043524,-94.6327044069767,-94.6321546062827,-94.6314756050706,-94.6309258043766,-94.6299668997526],"lat":[31.0991517975926,31.0987108945847,31.0980964973569,31.0976760983467,31.0971262976527,31.0966412946582,31.0960915982723,31.0954125002027,31.0947333946824,31.0939895957708,31.0933428928256,31.0927284955978,31.0921140983701,31.0917582958937,31.0914025977254,31.0908851996064,31.0904001966119,31.0897533968091,31.0891066938639,31.0884922966361,31.088007196784,31.0877161994576,31.0873280987144,31.0870693996549,31.0868753939867,31.0868753939867,31.0870693996549,31.087489798665,31.0878778994083,31.0882011950016,31.0883305966854,31.0882658958435,31.0882658958435,31.0886862948537,31.089041993022,31.0891713947058,31.0891066938639,31.0890096947551,31.0890096947551,31.0887832939625,31.0883305966854,31.0880394950509,31.0878778994083,31.0878454968333,31.0876837968826,31.0874574929476,31.0870047956705,31.0866166949272,31.0860669985414,31.0855495929718,31.0851291939616,31.0845794975758,31.0841266959906,31.0838033929467]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"red","weight":5,"opacity":1,"fill":false,"fillColor":"red","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-d5f0e774606dcb4fbd59" style="width:576px;height:504px;" class="leaflet html-widget"></div>
+<script type="application/json" data-for="htmlwidget-d5f0e774606dcb4fbd59">{"x":{"options":{"crs":{"crsClass":"L.CRS.EPSG3857","code":null,"proj4def":null,"projectedBounds":null,"options":{}}},"calls":[{"method":"addProviderTiles","args":["Esri.WorldTopoMap",null,null,{"errorTileUrl":"","noWrap":false,"detectRetina":false}]},{"method":"addPolygons","args":[[[[{"lng":[-94.63,-94.6305,-94.6336,-94.6345,-94.6362,-94.6397,-94.6438,-94.6444,-94.6456,-94.647,-94.6507,-94.6521,-94.6538,-94.6546,-94.6555,-94.6561,-94.6559,-94.6544,-94.6532,-94.6535,-94.653,-94.6513,-94.6497,-94.6495,-94.6492,-94.649,-94.6482,-94.6476,-94.6472,-94.6458,-94.6445,-94.644,-94.6441,-94.6425,-94.6413,-94.6399,-94.6375,-94.6345,-94.6328,-94.6313,-94.6295,-94.6285,-94.6298,-94.6302,-94.6314,-94.63,-94.6302,-94.6312,-94.6309,-94.6301,-94.6307,-94.6304,-94.6294,-94.6295,-94.6293,-94.6299,-94.6294,-94.6298,-94.63],"lat":[31.0837,31.0838,31.084,31.085,31.0855,31.0839,31.0842,31.0852,31.0848,31.0862,31.0865,31.0852,31.0849,31.0865,31.0853,31.0851,31.0861,31.0879,31.0891,31.0912,31.0938,31.0946,31.0947,31.0949,31.0976,31.0985,31.0994,31.0999,31.1005,31.101,31.1023,31.1042,31.106,31.1069,31.1069,31.1068,31.1072,31.1074,31.107,31.1073,31.108,31.1076,31.1062,31.1025,31.1007,31.0991,31.0978,31.0956,31.0926,31.0913,31.0899,31.0892,31.0877,31.0871,31.0864,31.0861,31.0854,31.0838,31.0837]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"green","weight":5,"opacity":0.5,"fill":true,"fillColor":"green","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]},{"method":"addPolylines","args":[[[[{"lng":[-94.6484468057752,-94.6480323001742,-94.6477413028479,-94.6475796028972,-94.6476119011641,-94.6477413028479,-94.6478383019567,-94.6476119011641,-94.6474179029465,-94.6472562029958,-94.6470298022032,-94.6467065066099,-94.6464478000998,-94.6460274010897,-94.6455100029707,-94.6450573056936,-94.6447015032172,-94.6440871059895,-94.6436021029949,-94.6433110013604,-94.643020004034,-94.6425026059151,-94.6418235003948,-94.641273804009,-94.6406594067812,-94.6401420012116,-94.6396246030927,-94.6390748023987,-94.6387515068054,-94.6382988020778,-94.6378137022257,-94.637134604156,-94.6367466002703,-94.636617206037,-94.6363908052444,-94.6360028013587,-94.6355177015066,-94.6351297050714,-94.6346770003438,-94.6343859061599,-94.6344829052687,-94.6345476061106,-94.6341919004917,-94.633577503264,-94.6329307034612,-94.6323163062334,-94.6322517022491,-94.632542707026,-94.6328337043524,-94.6327044069767,-94.6321546062827,-94.6314756050706,-94.6309258043766,-94.6299668997526],"lat":[31.0991517975926,31.0987108945847,31.0980964973569,31.0976760983467,31.0971262976527,31.0966412946582,31.0960915982723,31.0954125002027,31.0947333946824,31.0939895957708,31.0933428928256,31.0927284955978,31.0921140983701,31.0917582958937,31.0914025977254,31.0908851996064,31.0904001966119,31.0897533968091,31.0891066938639,31.0884922966361,31.088007196784,31.0877161994576,31.0873280987144,31.0870693996549,31.0868753939867,31.0868753939867,31.0870693996549,31.087489798665,31.0878778994083,31.0882011950016,31.0883305966854,31.0882658958435,31.0882658958435,31.0886862948537,31.089041993022,31.0891713947058,31.0891066938639,31.0890096947551,31.0890096947551,31.0887832939625,31.0883305966854,31.0880394950509,31.0878778994083,31.0878454968333,31.0876837968826,31.0874574929476,31.0870047956705,31.0866166949272,31.0860669985414,31.0855495929718,31.0851291939616,31.0845794975758,31.0841266959906,31.0838033929467]}]]],null,null,{"interactive":true,"className":"","stroke":true,"color":"red","weight":5,"opacity":1,"fill":false,"fillColor":"red","fillOpacity":0.2,"smoothFactor":1,"noClip":false},null,null,null,{"interactive":false,"permanent":false,"direction":"auto","opacity":1,"offset":[0,0],"textsize":"10px","textOnly":false,"className":"","sticky":true},null]}],"setView":[[31.09,-94.64],13,[]],"limits":{"lat":[31.0837,31.108],"lng":[-94.6561,-94.6285]}},"evals":[],"jsHooks":[]}</script>
 ]
 
 &lt;style&gt;
@@ -545,11 +544,11 @@ leaflet() %&gt;%
 
 count: false
  
-# Load NWM historical data using nwmTools package
+# NWM data using nwmTools package
 .panel1-nwm-auto[
 
 ```r
-*# library(nwmTools)  # library(nwmTools)
+*library(nwmTools)
 ```
 ]
  
@@ -560,12 +559,15 @@ count: false
 ---
 count: false
  
-# Load NWM historical data using nwmTools package
+# NWM data using nwmTools package
 .panel1-nwm-auto[
 
 ```r
-# library(nwmTools)  # library(nwmTools)
-*# library(dygraphs)  # library(dygraphs)
+library(nwmTools)
+
+# Retrieve flow data from NWM via COMID
+
+*# nwm &lt;- nwmTools::readNWMdata(comid = 101)  # nwm &lt;- nwmTools::readNWMdata(comid = 101)
 ```
 ]
  
@@ -576,38 +578,22 @@ count: false
 ---
 count: false
  
-# Load NWM historical data using nwmTools package
+# NWM data using nwmTools package
 .panel1-nwm-auto[
 
 ```r
-# library(nwmTools)  # library(nwmTools)
-# library(dygraphs)  # library(dygraphs)
+library(nwmTools)
 
-*# nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)  # nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)
+# Retrieve flow data from NWM via COMID
+
+# nwm &lt;- nwmTools::readNWMdata(comid = 101)  # nwm &lt;- nwmTools::readNWMdata(comid = 101)
+*graph_NWM(nwm)
 ```
 ]
  
 .panel2-nwm-auto[
-
-]
-
----
-count: false
- 
-# Load NWM historical data using nwmTools package
-.panel1-nwm-auto[
-
-```r
-# library(nwmTools)  # library(nwmTools)
-# library(dygraphs)  # library(dygraphs)
-
-# nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)  # nwm &lt;- nwmTools::readNWMdata(comid =nldi$comid)
-# dygraph
-```
-]
- 
-.panel2-nwm-auto[
-
+<div id="htmlwidget-8fe442e101fd54e5dc8a" style="width:100%;height:500px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-8fe442e101fd54e5dc8a">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":{"title":{"text":"Discharge (m³/s)"}},"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"series":[{"group":"group","data":[{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-01","vpd":0.42,"y":0.42,"name":"2011-01"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-02","vpd":0.54,"y":0.54,"name":"2011-02"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-03","vpd":0.78,"y":0.78,"name":"2011-03"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-04","vpd":1.07,"y":1.07,"name":"2011-04"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-05","vpd":1,"y":1,"name":"2011-05"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-06","vpd":1.45,"y":1.45,"name":"2011-06"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-07","vpd":1.61,"y":1.61,"name":"2011-07"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-08","vpd":1.85,"y":1.85,"name":"2011-08"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-09","vpd":1.45,"y":1.45,"name":"2011-09"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-10","vpd":1.05,"y":1.05,"name":"2011-10"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-11","vpd":0.62,"y":0.62,"name":"2011-11"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2011-12","vpd":0.39,"y":0.39,"name":"2011-12"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-01","vpd":0.51,"y":0.51,"name":"2012-01"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-02","vpd":0.44,"y":0.44,"name":"2012-02"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-03","vpd":0.7,"y":0.7,"name":"2012-03"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-04","vpd":0.96,"y":0.96,"name":"2012-04"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-05","vpd":1.04,"y":1.04,"name":"2012-05"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-06","vpd":1.29,"y":1.29,"name":"2012-06"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-07","vpd":1.29,"y":1.29,"name":"2012-07"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-08","vpd":1.45,"y":1.45,"name":"2012-08"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-09","vpd":1.2,"y":1.2,"name":"2012-09"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-10","vpd":0.82,"y":0.82,"name":"2012-10"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-11","vpd":0.8,"y":0.8,"name":"2012-11"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2012-12","vpd":0.56,"y":0.56,"name":"2012-12"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-01","vpd":0.42,"y":0.42,"name":"2013-01"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-02","vpd":0.58,"y":0.58,"name":"2013-02"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-03","vpd":0.8,"y":0.8,"name":"2013-03"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-04","vpd":0.77,"y":0.77,"name":"2013-04"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-05","vpd":0.92,"y":0.92,"name":"2013-05"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-06","vpd":1.22,"y":1.22,"name":"2013-06"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-07","vpd":1.35,"y":1.35,"name":"2013-07"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-08","vpd":1.56,"y":1.56,"name":"2013-08"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-09","vpd":1.34,"y":1.34,"name":"2013-09"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-10","vpd":0.72,"y":0.72,"name":"2013-10"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-11","vpd":0.47,"y":0.47,"name":"2013-11"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2013-12","vpd":0.36,"y":0.36,"name":"2013-12"},{"source":"terraclim","lat":31.10416666666,"lon":-94.6458333333531,"date":"2014-01","vpd":0.55,"y":0.55,"name":"2014-01"}],"type":"column","name":"Streamflow"}],"colors":["darkcyan"],"xAxis":{"categories":["2011-01","2011-02","2011-03","2011-04","2011-05","2011-06","2011-07","2011-08","2011-09","2011-10","2011-11","2011-12","2012-01","2012-02","2012-03","2012-04","2012-05","2012-06","2012-07","2012-08","2012-09","2012-10","2012-11","2012-12","2013-01","2013-02","2013-03","2013-04","2013-05","2013-06","2013-07","2013-08","2013-09","2013-10","2013-11","2013-12","2014-01"]}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","drillUpText":"Back to {series.name}","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"thousandsSep":" ","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
 ]
 
 &lt;style&gt;
@@ -644,7 +630,7 @@ count: false
 
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -659,7 +645,7 @@ count: false
 ---
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -675,7 +661,7 @@ library(climateR)
 ---
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -692,7 +678,7 @@ library(sf)
 ---
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -700,7 +686,7 @@ library(climateR)
 library(sf)
 library(highcharter)
 
-# Retrieve climate data at catchment centroid
+# Retrieve climate data for the catchment using centroid point
 *pt &lt;- st_centroid(flowline)
 ```
 ]
@@ -712,7 +698,7 @@ library(highcharter)
 ---
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -720,7 +706,7 @@ library(climateR)
 library(sf)
 library(highcharter)
 
-# Retrieve climate data at catchment centroid
+# Retrieve climate data for the catchment using centroid point
 pt &lt;- st_centroid(flowline)
 
 *# precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")  # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")
@@ -734,7 +720,7 @@ pt &lt;- st_centroid(flowline)
 ---
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -742,7 +728,7 @@ library(climateR)
 library(sf)
 library(highcharter)
 
-# Retrieve climate data at catchment centroid
+# Retrieve climate data for the catchment using centroid point
 pt &lt;- st_centroid(flowline)
 
 # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")  # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")
@@ -757,7 +743,7 @@ pt &lt;- st_centroid(flowline)
 ---
 count: false
  
-# Load climate data using climateR package
+# Climate data using climateR package
 .panel1-climate-auto[
 
 ```r
@@ -765,19 +751,19 @@ library(climateR)
 library(sf)
 library(highcharter)
 
-# Retrieve climate data at catchment centroid
+# Retrieve climate data for the catchment using centroid point
 pt &lt;- st_centroid(flowline)
 
 # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")  # precip &lt;- getTerraClim(AOI = pt, param = "prcp", startDate = "2011-01-01", endDate = "2014-01-01")
 # evap &lt;- getTerraClim(AOI = pt, param = "aet", startDate = "2011-01-01", endDate = "2014-01-01")  # evap &lt;- getTerraClim(AOI = pt, param = "aet", startDate = "2011-01-01", endDate = "2014-01-01")
 
-*climate_graph(precip, evap)
+*graph_climateR(precip, evap)
 ```
 ]
  
 .panel2-climate-auto[
-<div id="htmlwidget-8e8b6eabc1080736d567" style="width:100%;height:500px;" class="highchart html-widget"></div>
-<script type="application/json" data-for="htmlwidget-8e8b6eabc1080736d567">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":[{"title":{"text":"Accumulated Precipitation (mm)"},"min":0,"max":302,"showFirstLabel":true,"showLastLabel":true,"opposite":false},{"title":{"text":"Actual Evapotranspiration (mm)"},"showLastLabel":false,"opposite":true}],"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"series":[{"group":"group","data":[{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-01","prcp":7,"y":7,"name":"2011-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-02","prcp":50,"y":50,"name":"2011-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-03","prcp":14,"y":14,"name":"2011-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-04","prcp":59,"y":59,"name":"2011-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-05","prcp":211,"y":211,"name":"2011-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-06","prcp":38,"y":38,"name":"2011-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-07","prcp":55,"y":55,"name":"2011-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-08","prcp":57,"y":57,"name":"2011-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-09","prcp":43,"y":43,"name":"2011-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-10","prcp":118,"y":118,"name":"2011-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-11","prcp":89,"y":89,"name":"2011-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-12","prcp":62,"y":62,"name":"2011-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-01","prcp":40,"y":40,"name":"2012-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-02","prcp":53,"y":53,"name":"2012-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-03","prcp":123,"y":123,"name":"2012-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-04","prcp":136,"y":136,"name":"2012-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-05","prcp":76,"y":76,"name":"2012-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-06","prcp":43,"y":43,"name":"2012-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-07","prcp":22,"y":22,"name":"2012-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-08","prcp":56,"y":56,"name":"2012-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-09","prcp":88,"y":88,"name":"2012-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-10","prcp":63,"y":63,"name":"2012-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-11","prcp":26,"y":26,"name":"2012-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-12","prcp":21,"y":21,"name":"2012-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-01","prcp":30,"y":30,"name":"2013-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-02","prcp":79,"y":79,"name":"2013-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-03","prcp":34,"y":34,"name":"2013-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-04","prcp":154,"y":154,"name":"2013-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-05","prcp":302,"y":302,"name":"2013-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-06","prcp":105,"y":105,"name":"2013-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-07","prcp":192,"y":192,"name":"2013-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-08","prcp":103,"y":103,"name":"2013-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-09","prcp":56,"y":56,"name":"2013-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-10","prcp":100,"y":100,"name":"2013-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-11","prcp":33,"y":33,"name":"2013-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-12","prcp":34,"y":34,"name":"2013-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2014-01","prcp":5,"y":5,"name":"2014-01"}],"type":"column","name":"Precipitation","yAxis":1},{"group":"group","data":[{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-01","aet":8,"y":8,"name":"2011-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-02","aet":48,"y":48,"name":"2011-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-03","aet":14,"y":14,"name":"2011-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-04","aet":57,"y":57,"name":"2011-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-05","aet":156,"y":156,"name":"2011-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-06","aet":55,"y":55,"name":"2011-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-07","aet":61,"y":61,"name":"2011-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-08","aet":59,"y":59,"name":"2011-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-09","aet":44,"y":44,"name":"2011-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-10","aet":112,"y":112,"name":"2011-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-11","aet":75,"y":75,"name":"2011-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-12","aet":47,"y":47,"name":"2011-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-01","aet":45,"y":45,"name":"2012-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-02","aet":52,"y":52,"name":"2012-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-03","aet":108,"y":108,"name":"2012-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-04","aet":133,"y":133,"name":"2012-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-05","aet":81,"y":81,"name":"2012-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-06","aet":46,"y":46,"name":"2012-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-07","aet":24,"y":24,"name":"2012-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-08","aet":56,"y":56,"name":"2012-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-09","aet":86,"y":86,"name":"2012-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-10","aet":61,"y":61,"name":"2012-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-11","aet":26,"y":26,"name":"2012-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-12","aet":21,"y":21,"name":"2012-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-01","aet":29,"y":29,"name":"2013-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-02","aet":58,"y":58,"name":"2013-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-03","aet":37,"y":37,"name":"2013-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-04","aet":110,"y":110,"name":"2013-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-05","aet":133,"y":133,"name":"2013-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-06","aet":153,"y":153,"name":"2013-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-07","aet":184,"y":184,"name":"2013-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-08","aet":127,"y":127,"name":"2013-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-09","aet":64,"y":64,"name":"2013-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-10","aet":96,"y":96,"name":"2013-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-11","aet":36,"y":36,"name":"2013-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-12","aet":34,"y":34,"name":"2013-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2014-01","aet":8,"y":8,"name":"2014-01"}],"type":"line","name":"Evaporation","yAxis":0}],"colors":["darkcyan","darkred"],"xAxis":{"categories":["2011-01","2011-02","2011-03","2011-04","2011-05","2011-06","2011-07","2011-08","2011-09","2011-10","2011-11","2011-12","2012-01","2012-02","2012-03","2012-04","2012-05","2012-06","2012-07","2012-08","2012-09","2012-10","2012-11","2012-12","2013-01","2013-02","2013-03","2013-04","2013-05","2013-06","2013-07","2013-08","2013-09","2013-10","2013-11","2013-12","2014-01"]}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","drillUpText":"Back to {series.name}","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"thousandsSep":" ","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
+<div id="htmlwidget-2938ba881c46707f7c49" style="width:100%;height:500px;" class="highchart html-widget"></div>
+<script type="application/json" data-for="htmlwidget-2938ba881c46707f7c49">{"x":{"hc_opts":{"chart":{"reflow":true},"title":{"text":null},"yAxis":[{"title":{"text":"Accumulated Precipitation (mm)"},"min":0,"max":302,"showFirstLabel":true,"showLastLabel":true,"opposite":false},{"title":{"text":"Actual Evapotranspiration (mm)"},"showLastLabel":false,"opposite":true}],"credits":{"enabled":false},"exporting":{"enabled":false},"boost":{"enabled":false},"plotOptions":{"series":{"label":{"enabled":false},"turboThreshold":0},"treemap":{"layoutAlgorithm":"squarified"}},"series":[{"group":"group","data":[{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-01","prcp":7,"y":7,"name":"2011-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-02","prcp":50,"y":50,"name":"2011-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-03","prcp":14,"y":14,"name":"2011-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-04","prcp":59,"y":59,"name":"2011-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-05","prcp":211,"y":211,"name":"2011-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-06","prcp":38,"y":38,"name":"2011-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-07","prcp":55,"y":55,"name":"2011-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-08","prcp":57,"y":57,"name":"2011-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-09","prcp":43,"y":43,"name":"2011-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-10","prcp":118,"y":118,"name":"2011-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-11","prcp":89,"y":89,"name":"2011-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-12","prcp":62,"y":62,"name":"2011-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-01","prcp":40,"y":40,"name":"2012-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-02","prcp":53,"y":53,"name":"2012-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-03","prcp":123,"y":123,"name":"2012-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-04","prcp":136,"y":136,"name":"2012-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-05","prcp":76,"y":76,"name":"2012-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-06","prcp":43,"y":43,"name":"2012-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-07","prcp":22,"y":22,"name":"2012-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-08","prcp":56,"y":56,"name":"2012-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-09","prcp":88,"y":88,"name":"2012-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-10","prcp":63,"y":63,"name":"2012-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-11","prcp":26,"y":26,"name":"2012-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-12","prcp":21,"y":21,"name":"2012-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-01","prcp":30,"y":30,"name":"2013-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-02","prcp":79,"y":79,"name":"2013-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-03","prcp":34,"y":34,"name":"2013-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-04","prcp":154,"y":154,"name":"2013-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-05","prcp":302,"y":302,"name":"2013-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-06","prcp":105,"y":105,"name":"2013-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-07","prcp":192,"y":192,"name":"2013-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-08","prcp":103,"y":103,"name":"2013-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-09","prcp":56,"y":56,"name":"2013-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-10","prcp":100,"y":100,"name":"2013-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-11","prcp":33,"y":33,"name":"2013-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-12","prcp":34,"y":34,"name":"2013-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2014-01","prcp":5,"y":5,"name":"2014-01"}],"type":"column","name":"Precipitation","yAxis":1},{"group":"group","data":[{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-01","aet":8,"y":8,"name":"2011-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-02","aet":48,"y":48,"name":"2011-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-03","aet":14,"y":14,"name":"2011-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-04","aet":57,"y":57,"name":"2011-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-05","aet":156,"y":156,"name":"2011-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-06","aet":55,"y":55,"name":"2011-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-07","aet":61,"y":61,"name":"2011-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-08","aet":59,"y":59,"name":"2011-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-09","aet":44,"y":44,"name":"2011-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-10","aet":112,"y":112,"name":"2011-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-11","aet":75,"y":75,"name":"2011-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2011-12","aet":47,"y":47,"name":"2011-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-01","aet":45,"y":45,"name":"2012-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-02","aet":52,"y":52,"name":"2012-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-03","aet":108,"y":108,"name":"2012-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-04","aet":133,"y":133,"name":"2012-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-05","aet":81,"y":81,"name":"2012-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-06","aet":46,"y":46,"name":"2012-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-07","aet":24,"y":24,"name":"2012-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-08","aet":56,"y":56,"name":"2012-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-09","aet":86,"y":86,"name":"2012-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-10","aet":61,"y":61,"name":"2012-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-11","aet":26,"y":26,"name":"2012-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2012-12","aet":21,"y":21,"name":"2012-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-01","aet":29,"y":29,"name":"2013-01"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-02","aet":58,"y":58,"name":"2013-02"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-03","aet":37,"y":37,"name":"2013-03"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-04","aet":110,"y":110,"name":"2013-04"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-05","aet":133,"y":133,"name":"2013-05"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-06","aet":153,"y":153,"name":"2013-06"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-07","aet":184,"y":184,"name":"2013-07"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-08","aet":127,"y":127,"name":"2013-08"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-09","aet":64,"y":64,"name":"2013-09"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-10","aet":96,"y":96,"name":"2013-10"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-11","aet":36,"y":36,"name":"2013-11"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2013-12","aet":34,"y":34,"name":"2013-12"},{"source":"terraclim","lat":35.6458333333272,"lon":-96.9375000000192,"date":"2014-01","aet":8,"y":8,"name":"2014-01"}],"type":"line","name":"Evaporation","yAxis":0}],"colors":["darkcyan","darkred"],"xAxis":{"categories":["2011-01","2011-02","2011-03","2011-04","2011-05","2011-06","2011-07","2011-08","2011-09","2011-10","2011-11","2011-12","2012-01","2012-02","2012-03","2012-04","2012-05","2012-06","2012-07","2012-08","2012-09","2012-10","2012-11","2012-12","2013-01","2013-02","2013-03","2013-04","2013-05","2013-06","2013-07","2013-08","2013-09","2013-10","2013-11","2013-12","2014-01"]}},"theme":{"chart":{"backgroundColor":"transparent"},"colors":["#7cb5ec","#434348","#90ed7d","#f7a35c","#8085e9","#f15c80","#e4d354","#2b908f","#f45b5b","#91e8e1"]},"conf_opts":{"global":{"Date":null,"VMLRadialGradientURL":"http =//code.highcharts.com/list(version)/gfx/vml-radial-gradient.png","canvasToolsURL":"http =//code.highcharts.com/list(version)/modules/canvas-tools.js","getTimezoneOffset":null,"timezoneOffset":0,"useUTC":true},"lang":{"contextButtonTitle":"Chart context menu","decimalPoint":".","downloadJPEG":"Download JPEG image","downloadPDF":"Download PDF document","downloadPNG":"Download PNG image","downloadSVG":"Download SVG vector image","drillUpText":"Back to {series.name}","invalidDate":null,"loading":"Loading...","months":["January","February","March","April","May","June","July","August","September","October","November","December"],"noData":"No data to display","numericSymbols":["k","M","G","T","P","E"],"printChart":"Print chart","resetZoom":"Reset zoom","resetZoomTitle":"Reset zoom level 1:1","shortMonths":["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"],"thousandsSep":" ","weekdays":["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"]}},"type":"chart","fonts":[],"debug":false},"evals":[],"jsHooks":[]}</script>
 ]
 
 &lt;style&gt;
@@ -808,7 +794,7 @@ pt &lt;- st_centroid(flowline)
 &lt;/style&gt;
 
 
-.pull-left[
+
 
 ---
 # Contact info
@@ -822,7 +808,7 @@ pt &lt;- st_centroid(flowline)
 
 --
 
-- Thank you for listening to my idea!
+- Thanks for your time !
 
 --
 
